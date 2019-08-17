@@ -1,6 +1,8 @@
 // See <http://truffleframework.com/docs/advanced/configuration>
 var HDWalletProvider = require("truffle-hdwallet-provider");
 
+
+// WARNING!!! THIS KEY IS HERE FOR EASY DEMOING WITH REPO - IT'S SHARED A LOT SO CONSIDER IT TO BE COMPROMISED!!
 var WALLET_PK = "F1437FDDF08A9684EA73358A5F13AD0E29FAAF6A5CC9D7AFC35779F806DBA8D4";
 
 module.exports = {
