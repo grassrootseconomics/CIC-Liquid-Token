@@ -1,5 +1,44 @@
 ﻿
-# Bancor Protocol Contracts v0.4 (beta)
+# Bancor Protocol Contracts - Sarafu Fork
+
+Differences to orginal Bancor repo:
+- Added error messages to solidity contracts for easier debugging
+- Migration now deploys a smart (CC liquid token), reserve token and converter. (see /solidity/migrations/2_deploy_contracts.js)
+
+How to run dev instance:
+1. Install Ganache CLI
+```
+npm install -g ganache-cli
+```
+
+2. Install Locqal requirements:
+```
+npm install
+```
+
+3. Run ganache local blockchain on port 7545 with high block gas limit
+```
+ganache-cli -p 7545 -l 80000000
+```
+
+4. change to 'solidity' directory
+```
+truffle migrate --network development
+```
+
+5. To run on SOKOL (testnet) or xdai
+```
+truffle migrate --network SOKOL
+```
+or
+```
+truffle migrate --network XDAI
+```
+** THIS USES THE PRIVATE KEY AT THE TOP OF truffle-config.js **
+xDai is already loaded on. please be careful with gas because it's mainnet so worth actual money.
+
+
+## Original Readme Below:
 
 Bancor is a decentralized liquidity network that provides users with a simple, low-cost way to buy and sell tokens. Bancor’s open-source protocol empowers tokens with built-in convertibility directly through their smart contracts, allowing integrated tokens to be instantly converted for one another, without needing to match buyers and sellers in an exchange. The Bancor Wallet enables automated token conversions directly from within the wallet, at prices that are more predictable than exchanges and resistant to manipulation. To convert tokens instantly, including ETH, EOS, DAI and more, visit the [Bancor Web App](https://www.bancor.network/communities/5a780b3a287443a5cdea2477?utm_source=social&utm_medium=github&utm_content=readme), join the [Bancor Telegram group](https://t.me/bancor) or read the Bancor Protocol™ [Whitepaper](https://storage.googleapis.com/website-bancor/2018/04/01ba8253-bancor_protocol_whitepaper_en.pdf) for more information.
 
