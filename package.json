@@ -1,0 +1,31 @@
+{
+  "name": "bancor-contracts",
+  "version": "0.4.8",
+  "author": "Yudi Levi",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bancorprotocol/contracts"
+  },
+  "engines": {
+    "npm": "^3.0.0"
+  },
+  "scripts": {
+    "install": "node scripts/fix-modules.js",
+    "build": "node scripts/rebuild-all.js",
+    "test": "node scripts/run-tests.js",
+    "verify": "node scripts/verify-all.js",
+    "docify": "node scripts/generate-docs.js"
+  },
+  "dependencies": {
+    "decimal.js": "^10.0.0",
+    "ethereumjs-util": "^5.2.0",
+    "ganache-cli": "6.5.1",
+    "solidity-coverage": "0.6.4",
+    "solidity-docgen": "0.3.0-beta.4",
+    "truffle": "4.1.14",
+    "truffle-contract": "^3.0.7",
+    "truffle-flattener": "1.2.10",
+    "truffle-hdwallet-provider": "^1.0.16",
+    "web3-utils": "1.0.0-beta.55"
+  }
+}
