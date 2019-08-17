@@ -28,6 +28,18 @@ module.exports = {
             gasPrice:   0x1,             // Gas price used for deploys
             gas:        0x1fffffffffffff // Gas limit used for deploys
         },
+        XDAI: {
+            provider: new HDWalletProvider(
+                WALLET_PK,
+                "https://dai.poa.network"
+            ),
+            network_id: "*",             // Match any network id
+            gasPrice:   20000000000, // Gas price used for deploys
+            gas:        8000000,      // Gas limit used for deploys
+            skipDryRun: true
+
+        },
+
         POA: {
             provider: new HDWalletProvider(
                 WALLET_PK,
@@ -35,7 +47,8 @@ module.exports = {
             ),
             network_id: "*",             // Match any network id
             gasPrice:   20000000000, // Gas price used for deploys
-            gas:        5712388      // Gas limit used for deploys
+            gas:        8000000,      // Gas limit used for deploys
+            skipDryRun: true
         },
         SOKOL: {
             provider: new HDWalletProvider(

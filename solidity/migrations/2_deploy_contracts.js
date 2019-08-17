@@ -66,7 +66,7 @@ module.exports = function(deployer, network, accounts) {
             while (!success && failures < 3) {
                 current = 0;
                 try {
-                    await trystage( deployer.deploy(ContractRegistry, {overwrite: false}).then((instance) => {
+                    await trystage( deployer.deploy(ContractRegistry).then((instance) => {
                         contracts['CONTRACT_REGISTRY'] = instance;
                     }));
                     let contractRegistry = contracts['CONTRACT_REGISTRY'];
@@ -113,7 +113,7 @@ module.exports = function(deployer, network, accounts) {
                     await contractRegistry.registerAddress(bancorXId, accounts[0]);
 
 
-                    await trystage( deployer.deploy(SmartToken, 'SMART30', 'SM30', 2)
+                    await trystage( deployer.deploy(SmartToken, 'SMART10', 'SM10', 2)
                         .then(async (instance) =>
                         {
                             contracts['SMART_TOKEN'] = instance;
@@ -121,7 +121,7 @@ module.exports = function(deployer, network, accounts) {
 
                     let smartToken = contracts['SMART_TOKEN'];
 
-                    await trystage( deployer.deploy(TestERC20Token, 'CON 30', 'CN30', 1000000000)
+                    await trystage( deployer.deploy(TestERC20Token, 'CON 10', 'CN10', 1000000000)
                         .then(async (instance) =>
                         {
                             contracts['CONNECTOR_1'] = instance;
