@@ -9,10 +9,14 @@ const BancorGasPriceLimit = artifacts.require('BancorGasPriceLimit');
 const ContractRegistry = artifacts.require('ContractRegistry');
 const ContractFeatures = artifacts.require('ContractFeatures');
 const TestERC20Token = artifacts.require('TestERC20Token');
+const WrappedDai = artifacts.require('WrappedDai');
 const TestNonStandardERC20Token = artifacts.require('TestNonStandardERC20Token');
 const BancorConverterFactory = artifacts.require('BancorConverterFactory');
 const BancorConverterUpgrader = artifacts.require('BancorConverterUpgrader');
 /* eslint-disable prefer-reflect */
+
+const Web3Utils = require('web3-utils');
+
 
 module.exports = function(deployer, network, accounts) {
     let overwrite = true;
@@ -66,6 +70,8 @@ module.exports = function(deployer, network, accounts) {
             while (!success && failures < 3) {
                 current = 0;
                 try {
+
+
                     await trystage( deployer.deploy(ContractRegistry).then((instance) => {
                         contracts['CONTRACT_REGISTRY'] = instance;
                     }));
@@ -113,7 +119,7 @@ module.exports = function(deployer, network, accounts) {
                     await contractRegistry.registerAddress(bancorXId, accounts[0]);
 
 
-                    await trystage( deployer.deploy(SmartToken, 'SMART10', 'SM10', 2)
+                    await trystage( deployer.deploy(SmartToken, 'SMART20', 'SM20', 2)
                         .then(async (instance) =>
                         {
                             contracts['SMART_TOKEN'] = instance;
@@ -121,13 +127,16 @@ module.exports = function(deployer, network, accounts) {
 
                     let smartToken = contracts['SMART_TOKEN'];
 
-                    await trystage( deployer.deploy(TestERC20Token, 'CON 10', 'CN10', 1000000000)
+                    await trystage( deployer.deploy(WrappedDai, 'Wrapped DAI 2', 'WDAI')
                         .then(async (instance) =>
                         {
                             contracts['CONNECTOR_1'] = instance;
                         }));
 
-                    let connectorToken = contracts['CONNECTOR_1']
+                    let connectorToken = contracts['CONNECTOR_1'];
+
+                    let weiAmount = Web3Utils.toWei('0.1');
+                    let sendres = await connectorToken.sendTransaction({from: accounts[0], value: weiAmount});
 
                     await trystage( deployer.deploy(
                         BancorConverter,
