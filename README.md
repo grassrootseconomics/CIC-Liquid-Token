@@ -1,5 +1,5 @@
 ﻿
-# Bancor Protocol Contracts - Sarafu Fork
+# Community Inclusion Currencies (CIC) Contract - (Fork from Bancor Protocol) 
 
 Differences to orginal Bancor repo:
 - Added error messages to solidity contracts for easier debugging
@@ -38,7 +38,7 @@ truffle migrate --network XDAI
 xDai is already loaded on. please be careful with gas because it's mainnet so worth actual money.
 
 
-## Original Readme Below:
+## Original (Bancor) Readme Below:
 
 Bancor is a decentralized liquidity network that provides users with a simple, low-cost way to buy and sell tokens. Bancor’s open-source protocol empowers tokens with built-in convertibility directly through their smart contracts, allowing integrated tokens to be instantly converted for one another, without needing to match buyers and sellers in an exchange. The Bancor Wallet enables automated token conversions directly from within the wallet, at prices that are more predictable than exchanges and resistant to manipulation. To convert tokens instantly, including ETH, EOS, DAI and more, visit the [Bancor Web App](https://www.bancor.network/communities/5a780b3a287443a5cdea2477?utm_source=social&utm_medium=github&utm_content=readme), join the [Bancor Telegram group](https://t.me/bancor) or read the Bancor Protocol™ [Whitepaper](https://storage.googleapis.com/website-bancor/2018/04/01ba8253-bancor_protocol_whitepaper_en.pdf) for more information.
 
