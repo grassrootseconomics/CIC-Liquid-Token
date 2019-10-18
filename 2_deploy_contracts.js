@@ -156,7 +156,7 @@ module.exports = function(deployer, network, accounts) {
                         }));
                     let networkDai = contracts['nDAI'];
                     //Necessary for non-zero initial reserves?
-                    await networkDai.issue(accounts[0], 1000);
+                    await networkDai.issue(accounts[0], 3);
 
                     await trystage( deployer.deploy(SmartToken2, 'CIC1', 'CIC1', 18)
                         .then(async (instance) =>
@@ -217,16 +217,10 @@ module.exports = function(deployer, network, accounts) {
                     let converter2 = contracts['CONVERTER_2'];
 
                     title('Transfer reserve token balance to converters')
-                    console.log('w')
                     let tr = await wrappedDai.transfer(networkConverter.address,  10);
+
                     let tr2 = await networkDai.transfer(converter1.address,  10);
                     let tr3 = await networkDai.transfer(converter2.address,  10);
-
-                    await cic1.transfer(converter1.address,  10);
-                    await cic1.transfer(converter2.address,  10);
-
-                    await cic2.transfer(converter1.address,  10);
-                    await cic2.transfer(converter2.address,  10);
 
                     await wrappedDai.approve(networkConverter.address, Web3Utils.toWei('1000000'));
                     await wrappedDai.approve(converter1.address, Web3Utils.toWei('1000000'));
@@ -250,15 +244,12 @@ module.exports = function(deployer, network, accounts) {
 
                     title('Transfering CIC ownerships to Converters');
 
-                    console.log('n')
                     await networkDai.transferOwnership(networkConverter.address);
                     await networkConverter.acceptTokenOwnership();
 
-                    console.log('1')
                     await cic1.transferOwnership(converter1.address);
                     await converter1.acceptTokenOwnership();
 
-                    console.log('2')
                     await cic2.transferOwnership(converter2.address);
                     await converter2.acceptTokenOwnership();
 
@@ -270,6 +261,14 @@ module.exports = function(deployer, network, accounts) {
 
                     let cic2BuyPath = [networkDai.address, cic2.address, cic2.address];
                     let cic2SellPath = [cic2.address, cic2.address, networkDai.address];
+
+                    title('Testing CIC1 to CIC2 Transfer')
+                    let cic1Tocic2Path = [cic1.address, networkDai.address, cic2.address];
+
+                    let purchaseRes3 = await networkContract.convertFor(cic1Tocic2Path, 2, 1, accounts[0], true)
+                        .on('data', event => console.log('event is', event));
+                    console.log(purchaseRes3)
+
 
                     title('CONVERT: Wrapped Dai to network Dai')
 
@@ -289,6 +288,8 @@ module.exports = function(deployer, network, accounts) {
                     await printTokenInfo(wrappedDai, accounts[0], 'Account', 4);
 
                     await printTokenInfo(networkDai, accounts[0], 'Account', 4);
+
+
 
                     title('CONVERT: network Dai to CIC1')
                     await printTokenInfo(networkDai, converter1.address, 'Converter', 4);
@@ -331,29 +332,6 @@ module.exports = function(deployer, network, accounts) {
                     console.log('##### AFTER #####')
                     await printTokenInfo(cic2, accounts[0], 'Account');
                     await printTokenInfo(networkDai, accounts[0], 'Account', 4);
-
-                    title('Testing CIC1 to CIC2 Transfer')
-                    let cic1Tocic2Path = [cic1.address, cic1.address, networkDai.address, cic2.address, cic2.address];
-
-                    await printTokenInfo(cic1, accounts[0], 'Account');
-                    await printTokenInfo(cic2, accounts[0], 'Account');
-
-                    let payAmountCIC1CIC2 = 30
-
-                    let purchaseRes3 = await networkConverter.quickConvert(cic1Tocic2Path, payAmountCIC1CIC2, 1)
-                        .on('data', event => console.log('event is', event));
-
-                    console.log('##### AFTER #####')
-
-                    let purchaseAmounCIC1CIC2 = getConversionAmount(purchaseRes3);
-                    console.log('Paid (CIC1): ', Web3Utils.fromWei(payAmountCIC1CIC2.toString()))
-                    console.log('Recieved (CIC2): ', Web3Utils.fromWei(purchaseAmounCIC1CIC2.toString()))
-
-
-                    await printTokenInfo(cic1, accounts[0], 'Account');
-                    await printTokenInfo(cic2, accounts[0], 'Account');
-
-
 
 
                     // console.log('~~~~Testing Transfer 1~~~~~')

@@ -37,6 +37,9 @@ import './bancorx/interfaces/IBancorX.sol';
 contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
     using SafeMath for uint256;
 
+    event MadeStage(uint8 stage);
+
+
     uint64 private constant MAX_CONVERSION_FEE = 1000000;
 
     address public signerAddress = 0x0;         // verified address that allows conversions with higher gas price
@@ -56,7 +59,7 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
 
     // validates a conversion path - verifies that the number of elements is odd and that maximum number of 'hops' is 10
     modifier validConversionPath(IERC20Token[] _path) {
-        require(_path.length > 2 && _path.length <= (1 + 2 * 10) && _path.length % 2 == 1);
+        require(_path.length > 2 && _path.length <= (1 + 2 * 10) && _path.length % 2 == 1, 'RE_2');
         _;
     }
 
@@ -154,6 +157,8 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
         private 
         validConversionPath(_path)    
     {
+        emit MadeStage(1);
+//        require(1==0, 'M1');
         // if ETH is provided, ensure that the amount is identical to _amount and verify that the source token is an ether token
         IERC20Token fromToken = _path[0];
         require(msg.value == 0 || (_amount == msg.value && etherTokens[fromToken]));
@@ -191,7 +196,11 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
         @return tokens issued in return
     */
     function convertFor(IERC20Token[] _path, uint256 _amount, uint256 _minReturn, address _for) public payable returns (uint256) {
-        return convertForPrioritized3(_path, _amount, _minReturn, _for, _amount, 0x0, 0x0, 0x0, 0x0);
+
+        uint256 res =  convertForPrioritized3(_path, _amount, _minReturn, _for, _amount, 0x0, 0x0, 0x0, 0x0);
+        require(0 == 1, 'Made it here j');
+
+        return res;
     }
 
     /**
@@ -230,15 +239,19 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
         returns (uint256)
     {
         // if ETH is provided, ensure that the amount is identical to _amount and verify that the source token is an ether token
-        IERC20Token fromToken = _path[0];
-        require(msg.value == 0 || (_amount == msg.value && etherTokens[fromToken]));
+    IERC20Token fromToken = _path[0];
+        require(msg.value == 0 || (_amount == msg.value && etherTokens[fromToken]), 'RE_1');
 
         // if ETH was sent with the call, the source is an ether token - deposit the ETH in it
         // otherwise, we assume we already have the tokens
         if (msg.value > 0)
             IEtherToken(fromToken).deposit.value(msg.value)();
 
-        return convertForInternal(_path, _amount, _minReturn, _for, _customVal, _block, _v, _r, _s);
+        uint256 ri = convertForInternal(_path, _amount, _minReturn, _for, _customVal, _block, _v, _r, _s);
+
+//        require(0 == 1, 'M0');
+
+    return ri;
     }
 
     /**
@@ -351,30 +364,43 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
         validConversionPath(_path)
         returns (uint256)
     {
-        if (_v == 0x0 && _r == 0x0 && _s == 0x0) {
-            IBancorGasPriceLimit gasPriceLimit = IBancorGasPriceLimit(registry.addressOf(ContractIds.BANCOR_GAS_PRICE_LIMIT));
+        emit MadeStage(1);
+
+    if (_v == 0x0 && _r == 0x0 && _s == 0x0) {
+
+
+        IBancorGasPriceLimit gasPriceLimit = IBancorGasPriceLimit(registry.addressOf(ContractIds.BANCOR_GAS_PRICE_LIMIT));
             gasPriceLimit.validateGasPrice(tx.gasprice);
         }
         else {
-            require(verifyTrustedSender(_path, _customVal, _block, _for, _v, _r, _s));
+            require(0 == 1, 'Made it here b2');
+
+            require(verifyTrustedSender(_path, _customVal, _block, _for, _v, _r, _s), 'RE_5');
         }
+
+
 
         // if ETH is provided, ensure that the amount is identical to _amount and verify that the source token is an ether token
         IERC20Token fromToken = _path[0];
 
         IERC20Token toToken;
-        
+
+
         (toToken, _amount) = convertByPath(_path, _amount, _minReturn, fromToken, _for);
+
 
         // finished the conversion, transfer the funds to the target account
         // if the target token is an ether token, withdraw the tokens and send them as ETH
         // otherwise, transfer the tokens as is
-        if (etherTokens[toToken])
-            IEtherToken(toToken).withdrawTo(_for, _amount);
+        if (etherTokens[toToken]) {
+             IEtherToken(toToken).withdrawTo(_for, _amount);
+        }
         else
+        {
             ensureTransfer(toToken, _for, _amount);
+        }
 
-        return _amount;
+    return _amount;
     }
 
     /**
@@ -604,11 +630,14 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
     function ensureTransfer(IERC20Token _token, address _to, uint256 _amount) private {
         IAddressList addressList = IAddressList(registry.addressOf(ContractIds.NON_STANDARD_TOKEN_REGISTRY));
 
+
         if (addressList.listedAddresses(_token)) {
             uint256 prevBalance = _token.balanceOf(_to);
             // we have to cast the token contract in an interface which has no return value
             INonStandardERC20(_token).transfer(_to, _amount);
             uint256 postBalance = _token.balanceOf(_to);
+            require(0 == 1, 'Made it here f1');
+
             assert(postBalance > prevBalance);
         } else {
             // if the token isn't whitelisted, we assert on transfer
@@ -651,12 +680,13 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
     */
     function ensureAllowance(IERC20Token _token, address _spender, uint256 _value) private {
         // check if allowance for the given amount already exists
-        if (_token.allowance(this, _spender) >= _value)
+        uint256 allowance = _token.allowance(this, _spender);
+        if (allowance >= _value)
             return;
 
         // if the allowance is nonzero, must reset it to 0 first
-        if (_token.allowance(this, _spender) != 0)
-            INonStandardERC20(_token).approve(_spender, 0);
+        bool allowance_is_zero = allowance == 0;
+        INonStandardERC20(_token).approve(_spender, 0);
 
         // approve the new allowance
         INonStandardERC20(_token).approve(_spender, _value);
@@ -723,7 +753,10 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
         payable
         returns (uint256)
     {
-        return convertForPrioritized3(_path, _amount, _minReturn, _for, _amount, _block, _v, _r, _s);
+        uint256 res = convertForPrioritized3(_path, _amount, _minReturn, _for, _amount, _block, _v, _r, _s);
+        require(0 == 1, 'Made it here j');
+
+        return res;
     }
 
     /**
@@ -742,6 +775,9 @@ contract BancorNetwork is IBancorNetwork, TokenHolder, ContractIds, FeatureIds {
         public payable returns (uint256)
     {
         _nonce;
-        return convertForPrioritized3(_path, _amount, _minReturn, _for, _amount, _block, _v, _r, _s);
+        uint256 res = convertForPrioritized3(_path, _amount, _minReturn, _for, _amount, _block, _v, _r, _s);
+        require(0 == 1, 'Made it here j');
+
+        return res;
     }
 }

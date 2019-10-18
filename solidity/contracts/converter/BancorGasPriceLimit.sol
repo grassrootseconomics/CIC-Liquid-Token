@@ -48,6 +48,6 @@ contract BancorGasPriceLimit is IBancorGasPriceLimit, Owned, Utils {
         view
         greaterThanZero(_gasPrice)
     {
-        require(_gasPrice <= gasPrice);
+        require(_gasPrice <= gasPrice, 'RE_4');
     }
 }
