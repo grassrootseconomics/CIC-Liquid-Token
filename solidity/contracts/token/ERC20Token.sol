@@ -113,7 +113,7 @@ contract ERC20Token is IERC20Token, Utils {
         returns (bool success)
     {
         // if the allowance isn't 0, it can only be updated to 0 to prevent an allowance change immediately after withdrawal
-        require(_value == 0 || allowance[msg.sender][_spender] == 0, 'Value or current allowance is not 0');
+//        require(_value == 0 || allowance[msg.sender][_spender] == 0, 'Value or current allowance is not 0');
 
         allowance[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
